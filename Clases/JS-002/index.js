@@ -62,7 +62,12 @@ const onSubmit = (event) => {
                   <td>${cantidad}</td> 
                   <td>${precio}</td> 
                   <td>${total}</td> 
-                  <td><a href="#" onclick="onEdit(event)">Editar</a> | <a href="#" onclick="onDelete(event)">Eliminar</a></td> 
+                  <td> 
+                      <div class="btn-group">
+                        <a href="#" title="Editar" onclick="onEdit(event)" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil-square"></i></a>
+                        <a href="#" title="Eliminar"onclick="onDelete(event)" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+                      </div>
+                  </td> 
                   `;
 
   cantidadTotalEl.innerHTML = cantidadTotal;
@@ -83,8 +88,8 @@ const onEdit = (event) => {
   event.preventDefault();
 
   /** @type {HTMLAnchorElement} */
-  const anchor = event.target;
-  const tr = anchor.parentElement.parentElement;
+  const anchor = event.currentTarget;
+  const tr = anchor.parentElement.parentElement.parentElement;
 
   const celdas = tr.getElementsByTagName("td");
   const [tdCodigo, tdNombre, tdCantidad, tdPrecio] = celdas;
@@ -105,4 +110,9 @@ const onEdit = (event) => {
 
 const onDelete = (event) => {
   event.preventDefault();
+
+  /** @type {HTMLElement} */
+  const anchor = event.target;
+  const tr = anchor.parentElement.parentElement.parentElement;
+  tbody.removeChild(tr);
 };
