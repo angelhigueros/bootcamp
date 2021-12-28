@@ -6,7 +6,7 @@ const actionTypes = {
   ProductoAgregadoOModicado: "producto:agregado-modificado",
 };
 
-const reducer = (state, action) => {
+export const reducer = (state, action) => {
   switch (action.type) {
     case actionTypes.ProductoAgregado:
       return productoAgregadoReducer(state, action);
@@ -27,31 +27,31 @@ const reducer = (state, action) => {
 
 // action builder
 
-const productoSeleccionado = (codigo) => ({
+export const productoSeleccionado = (codigo) => ({
   type: actionTypes.ProductoSeleccionado,
   payload: {
     codigo,
   },
 });
 
-const productoEliminado = (codigo) => ({
+export const productoEliminado = (codigo) => ({
   type: actionTypes.ProductoEliminado,
   payload: {
     codigo,
   },
 });
 
-const productoModificado = (payload) => ({
+export const productoModificado = (payload) => ({
   type: actionTypes.ProductoModificado,
   payload,
 });
 
-const productoAgregado = (payload) => ({
+export const productoAgregado = (payload) => ({
   type: actionTypes.ProductoAgregado,
   payload,
 });
 
-const agregarOModificarProducto = (payload) => ({
+export const agregarOModificarProducto = (payload) => ({
   type: actionTypes.ProductoAgregadoOModicado,
   payload,
 });
@@ -68,7 +68,7 @@ const agregarOModificarProducto = (payload) => ({
 //   };
 // }
 
-const loggerMiddleware = (store) => (next) => (action) => {
+export const loggerMiddleware = (store) => (next) => (action) => {
   console.log("distpatch", action);
   const result = next(action);
   console.log("state", store.getState());
@@ -113,21 +113,22 @@ function productoAgregadoReducer(state, action) {
   };
 }
 
-const agregarOModificarProductoMiddleware = (store) => (next) => (action) => {
-  if (action.type != actionTypes.ProductoAgregadoOModicado) {
-    return next(action);
-  }
+export const agregarOModificarProductoMiddleware =
+  (store) => (next) => (action) => {
+    if (action.type != actionTypes.ProductoAgregadoOModicado) {
+      return next(action);
+    }
 
-  const producto = action.payload;
-  const actionToDispatch = producto.codigo
-    ? productoModificado(producto)
-    : productoAgregado(producto);
+    const producto = action.payload;
+    const actionToDispatch = producto.codigo
+      ? productoModificado(producto)
+      : productoAgregado(producto);
 
-  store.dispatch(actionToDispatch);
-  return store.dispatch(productoSeleccionado(null));
-};
+    store.dispatch(actionToDispatch);
+    return store.dispatch(productoSeleccionado(null));
+  };
 
-function generadorCodigoProductoBuilder(codigoInicial) {
+export function generadorCodigoProductoBuilder(codigoInicial) {
   let codigo = codigoInicial;
 
   return (store) => (next) => (action) => {
