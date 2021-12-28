@@ -3,31 +3,39 @@ const preloadedState = {
   productos: [],
 };
 
-const store = Redux.createStore(reducer, preloadedState);
+const middlewares = Redux.applyMiddleware(
+  loggerMiddleware,
+  agregarOModificarProductoMiddleware,
+  generadorCodigoProductoBuilder(0)
+);
 
-let lastestState;
+const store = Redux.createStore(reducer, preloadedState, middlewares);
 
-const unsubscrube = store.subscribe(() => {
-  let currentState = store.getState();
-
-  if (currentState != lastestState) {
-    lastestState = currentState;
-    ui.renderForm(currentState.producto);
-    ui.renderTable(currentState.productos);
-  }
-});
+store.subscribe(
+  dispatchOnChange(store, (state) => {
+    ui.renderForm(state.producto);
+    ui.renderTable(state.productos);
+  })
+);
 
 ui.onFormSumbit = (producto) => {
-  if (producto.codigo) {
-    store.dispatch(productStore.productoModificado(producto));
-  } else {
-    store.dispatch(productStore.productoAgregado(producto));
-  }
-
-  store.dispatch(productStore.productoSeleccionado(null));
+  store.dispatch(agregarOModificarProducto(producto));
   inputNombre.focus();
 };
 
-ui.onEliminarClick = (codigo) => productStore.productoEliminado(codigo);
+ui.onEliminarClick = (codigo) => productoEliminado(codigo);
 
 ui.onEditarClick = (codigo) => productoSeleccionado(codigo);
+
+function dispatchOnChange(store, dispatch) {
+  let lastestState;
+
+  return function () {
+    let currentState = store.getState();
+
+    if (currentState != lastestState) {
+      lastestState = currentState;
+      dispatch(currentState);
+    }
+  };
+}
